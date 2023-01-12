@@ -9,7 +9,7 @@ from sklearn.preprocessing import normalize
 
 import matplotlib.pyplot as plt
 
-
+# load data from every file in data directory
 def load_data():
     data = []
     for path in os.listdir('data'):
@@ -19,6 +19,7 @@ def load_data():
 
     return data[:, :-3], data[:, -3], data[:, -2], data[:, -1]
 
+# basic visualization
 def force_vis():
     X, Yx, Yy, Yz = load_data()
     plt.plot(Yx, Yy, '.')
@@ -37,7 +38,7 @@ def force_vis():
     print(np.corrcoef(Yx, Yz))
     plt.show()
 
-
+# find degree of polynomial transformation
 def learn(X, y):
     train = int(np.shape(X)[0]*0.8)
     val = int(np.shape(X)[0]*0.95)
@@ -56,7 +57,6 @@ def learn(X, y):
         poly = PolynomialFeatures(degree = i)
         X_poly = poly.fit_transform(X_train)
   
-        # poly.fit(X_poly, y)
         lin2 = LinearRegression()
         lin2.fit(X_poly, y_train)
 
@@ -67,7 +67,6 @@ def learn(X, y):
             best_err = err_val[-1]
             best_i = i
 
-    #TODO: print test error of best model
     print('Best model si polynom -', best_i, 'degree')
     poly = PolynomialFeatures(degree = best_i)
     X_poly = poly.fit_transform(X_train)
@@ -83,13 +82,11 @@ def learn(X, y):
 # force_vis()
 X, Yx, Yy, Yz = load_data()
 
-# lin.reg
+print('====Force X====')
 learn(X, Yx)
-
-# 3 stupen
+print('====Force Y====')
 learn(X, Yy)
-
-# 2 stupen 
+print('====Force Z====')
 learn(X, Yz)
 
 
