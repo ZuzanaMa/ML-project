@@ -39,12 +39,6 @@ def force_vis():
 
 
 def learn(X, y):
-    # TODO: filter outliers?
-    # TODO: to normalize or to not normalize
-    # vahovana lin reg?
-    # sc_X = StandardScaler()
-    # X = sc_X.fit_transform(X)
-    print(np.shape(X))
     train = int(np.shape(X)[0]*0.8)
     val = int(np.shape(X)[0]*0.95)
 
@@ -53,34 +47,49 @@ def learn(X, y):
     y_train = y[:train]
     y_val = y[train:val]
 
-    for i in range(1, 7):
-        print(i)
+    err_train = []
+    err_val = []
+    best_i = 1
+    best_err = float('inf')
+
+    for i in range(1, 8):
         poly = PolynomialFeatures(degree = i)
         X_poly = poly.fit_transform(X_train)
-        print(np.shape(X_poly))
   
         # poly.fit(X_poly, y)
         lin2 = LinearRegression()
         lin2.fit(X_poly, y_train)
 
-        print(mean_squared_error(lin2.predict(poly.fit_transform(X_val)), y_val))
+        err_train.append(mean_squared_error(lin2.predict(poly.fit_transform(X_train)), y_train))
+        err_val.append(mean_squared_error(lin2.predict(poly.fit_transform(X_val)), y_val))
+        
+        if err_val[-1] < best_err:
+            best_err = err_val[-1]
+            best_i = i
 
+    #TODO: print test error of best model
+    print('Best model si polynom -', best_i, 'degree')
+    poly = PolynomialFeatures(degree = best_i)
+    X_poly = poly.fit_transform(X_train)
+    lin2 = LinearRegression()
+    lin2.fit(X_poly, y_train)
+
+    print('test error:', mean_squared_error(lin2.predict(poly.fit_transform(X[val:])), y[val:]))
+
+    plt.plot(list(range(1, 8)), err_train )
+    plt.plot(list(range(1, 8)), err_val )
+    plt.show()
+
+# force_vis()
 X, Yx, Yy, Yz = load_data()
 
-from time import time
-t = time()
-# nenormalizujeme data - lin.reg
+# lin.reg
 learn(X, Yx)
-print(time()-t)
 
-# 3 , normalizovane
-# t = time()
-# learn(X, Yy)
-# print(time()-t)
+# 3 stupen
+learn(X, Yy)
 
-# 2, nenormalizujeme 
-# t = time()
-# learn(X, Yz)
-# print(time()-t)
+# 2 stupen 
+learn(X, Yz)
 
-force_vis()
+
