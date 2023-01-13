@@ -89,4 +89,3 @@ learn(X, Yy)
 print('====Force Z====')
 learn(X, Yz)
 
-
